@@ -19,6 +19,7 @@ App.use(Express.static('public'));
 
 // Mount all resource routes
 // Example -- app.use('/api/products', productRoutes);
+// Example -- app.use('/api/users', userRoutes);
 
 // Home GET route
 App.get('/api/data', (req, res) => res.json({
