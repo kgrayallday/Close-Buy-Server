@@ -7,7 +7,7 @@ Update the .env file with your correct local information
 
 - username: labber
 - password: labber
-- database: close-buy
+- database: close_buy
 - Port etc...
 
 Install dependencies: npm i
