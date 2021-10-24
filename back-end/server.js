@@ -8,6 +8,7 @@ const App = Express();
 const BodyParser = require('body-parser');
 
 
+
 // Express Configuration
 App.use(BodyParser.urlencoded({ extended: false }));
 App.use(BodyParser.json());
@@ -16,10 +17,12 @@ App.use(Express.static('public'));
 // Separated Routes for each Resource 
 // Example -- const products = require("./routes/products");
 // Example -- const userRoutes = require("./routes/users");
+const products = require("./routes/products");
 
 // Mount all resource routes
 // Example -- app.use('/api/products', productRoutes);
 // Example -- app.use('/api/users', userRoutes);
+App.use('/api/products', products());
 
 // Home GET route
 App.get('/api/data', (req, res) => res.json({
