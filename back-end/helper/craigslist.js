@@ -27,7 +27,7 @@ const options = {
 };
 
 
-exports.getFullListings = async (queryString) => {
+exports.getCraigslistsFullListings = async (queryString) => {
 
   if (!queryString) {
     return [];
@@ -47,14 +47,14 @@ exports.getFullListings = async (queryString) => {
   return listingArray;
 };
 
-exports.getListings = async (queryString) => {
+exports.getCraigslistsListings = async (queryString) => {
   if (!queryString) {
     return [];
   }
   return client.search(options, queryString);
 };
 
-exports.getDeatil = async (url, pid) => {
+exports.getCraigslistsDeatil = async (url, pid) => {
   if (!(url && pid)) return {};
   return client.details({url, pid});
 };
