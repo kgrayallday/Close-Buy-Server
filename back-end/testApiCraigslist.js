@@ -5,17 +5,19 @@ const _BASEHOST = 'craigslist.org';
 const maxRedirectCount = 5;
 const city = 'vancouver';
 
-const query = 'lights';
+const query = 'couch';
 const category = 'fua'; // defaults to sss (all)
-const maxPrice = '70';
 const minPrice = '50';
+const maxPrice = '200';
 
 const myIp = ''; //TODO : test - get geocode and pass to this api
 
 const client = new craigslist.Client({
-  city: city,
+  city: 'abbotsford',
   maxRedirectCount: maxRedirectCount,
-  protocol: _PROTOCOL
+  protocol: _PROTOCOL,
+  postal: 'V2X9G*',
+  searchDistance: 30
 });
 
 const options = {
@@ -23,19 +25,20 @@ const options = {
   category: category, 
   maxPrice: maxPrice,
   minPrice: minPrice
+
 };
 
 /**************************/
 /****** For Listing *******/
 /**************************/
-// client
-//   .search(options, query)
-//   .then((listings) => {
-//     listings.forEach((listing) => console.log(listing));
-//   })
-//   .catch((err) => {
-//     console.error(err);
-//   });
+client
+  .search(options, query)
+  .then((listings) => {
+    listings.forEach((listing) => console.log(listing));
+  })
+  .catch((err) => {
+    console.error(err);
+  });
 
 /**************************/
 /****** For Detail *******/
@@ -54,21 +57,21 @@ const options = {
 /**************************************************/
 /****** For mergin detail to listing **************/
 /**************************************************/
-async function asyncMain () {
-  const listings = await client.search(options, query);
+// async function asyncMain () {
+//   const listings = await client.search(options, query);
 
-  const details = await Promise.all(listings.map(async (listing) => { 
-    let detail = await client.details({url: listing.url, pid: listing.pid})
-    return detail;
-  }));
+//   const details = await Promise.all(listings.map(async (listing) => { 
+//     let detail = await client.details({url: listing.url, pid: listing.pid})
+//     return detail;
+//   }));
 
-  let listingArray = listings.map((listing, index) => {
-    return {...listing, details: details[index]}
-  })
+//   let listingArray = listings.map((listing, index) => {
+//     return {...listing, details: details[index]}
+//   })
 
-  console.log(listingArray);   
-}
-asyncMain();
+//   console.log(listingArray);   
+// }
+// asyncMain();
 
 
 
