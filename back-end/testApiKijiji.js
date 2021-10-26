@@ -1,7 +1,9 @@
 const kijiji = require("kijiji-scraper");
 
 const options = {
-    minResults: 20
+    maxResults: 20,
+    // scraperType: "html",
+    // scrapeResultDetails: true,
 };
 
 const params = {
@@ -9,6 +11,7 @@ const params = {
     categoryId: 0,  // https://github.com/mwpenny/kijiji-scraper/blob/HEAD/lib/categories.ts
     // sortByName: priceAsc, //"dateDesc", "dateAsc", "priceDesc", "priceAsc"
     sortType: 'DISTANCE_ASCENDING', //"DATE_DESCENDING", "DISTANCE_ASCENDING", "PRICE_ASCENDING", "PRICE_DESCENDING
+
     q : 'couch'
 };
 

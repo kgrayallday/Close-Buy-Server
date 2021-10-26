@@ -24,21 +24,21 @@ const options = {
   baseHost: _BASEHOST, // defaults to craigslist.org
   category: category, 
   maxPrice: maxPrice,
-  minPrice: minPrice
-
+  minPrice: minPrice,
+  offset: '5'
 };
 
 /**************************/
 /****** For Listing *******/
 /**************************/
-client
-  .search(options, query)
-  .then((listings) => {
-    listings.forEach((listing) => console.log(listing));
-  })
-  .catch((err) => {
-    console.error(err);
-  });
+// client
+//   .search(options, query)
+//   .then((listings) => {
+//     listings.forEach((listing) => console.log(listing));
+//   })
+//   .catch((err) => {
+//     console.error(err);
+//   });
 
 /**************************/
 /****** For Detail *******/
@@ -57,21 +57,21 @@ client
 /**************************************************/
 /****** For mergin detail to listing **************/
 /**************************************************/
-// async function asyncMain () {
-//   const listings = await client.search(options, query);
+async function asyncMain () {
+  const listings = await client.search(options, query);
 
-//   const details = await Promise.all(listings.map(async (listing) => { 
-//     let detail = await client.details({url: listing.url, pid: listing.pid})
-//     return detail;
-//   }));
+  const details = await Promise.all(listings.map(async (listing) => { 
+    let detail = await client.details({url: listing.url, pid: listing.pid})
+    return detail;
+  }));
 
-//   let listingArray = listings.map((listing, index) => {
-//     return {...listing, details: details[index]}
-//   })
+  let listingArray = listings.map((listing, index) => {
+    return {...listing, details: details[index]}
+  })
 
-//   console.log(listingArray);   
-// }
-// asyncMain();
+  console.log(listingArray);   
+}
+asyncMain();
 
 
 
