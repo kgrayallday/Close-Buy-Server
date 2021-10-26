@@ -16,7 +16,8 @@ const myIp = ''; //TODO : test - get geocode and pass to craigslist api
 const client = new craigslist.Client({
   city: city,
   maxRedirectCount: maxRedirectCount,
-  protocol: _PROTOCOL
+  protocol: _PROTOCOL,
+  offset: 20
 });
 
 const options = {
@@ -43,6 +44,8 @@ exports.getCraigslistsFullListings = async (queryString) => {
   let listingArray = listings.map((listing, index) => {
     return { ...listing, details: details[index] }
   })
+
+  console.log(listingArray.length);
 
   return listingArray;
 };
