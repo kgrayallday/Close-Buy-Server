@@ -6,5 +6,5 @@ CREATE TABLE products (
   name VARCHAR(255) NOT NULL,
   primary_url TEXT NOT NULL,
   domain VARCHAR(255) NOT NULL,
-  price INTEGER NOT NULL,
+  price INTEGER NOT NULL
 );
