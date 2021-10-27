@@ -44,7 +44,7 @@ exports.getCraigslistsFullListings = async (queryString) => {
     return { ...listing, details: details[index] }
   })
 
-  return listingArray;
+  return makeClosbuyObj(listingArray);
 };
 
 exports.getCraigslistsListings = async (queryString) => {
@@ -57,4 +57,26 @@ exports.getCraigslistsListings = async (queryString) => {
 exports.getCraigslistsDeatil = async (url, pid) => {
   if (!(url && pid)) return {};
   return client.details({url, pid});
+};
+
+const makeClosbuyObj = (cObj) => {
+  const newObj = cObj.map(obj => {    
+    obj.domain = 'craigslist'
+    obj.category = 'green'
+    obj.domain_id = Number(obj.pid);
+    obj.images = (obj.details.images) ? obj.details.images : [];
+    obj.location = 'TBD----' + obj.location;
+    obj.price = (obj.price.trim().isEmpty) ? 0 : Number(obj.price.replace('$',''));
+    obj.description = obj.details.description;
+    obj.post_date = obj.date;
+
+    delete obj.date;
+    delete obj.hasPic;
+    delete obj.pid;
+    delete obj.details;
+
+    return obj;
+  })
+
+  return newObj;
 };
