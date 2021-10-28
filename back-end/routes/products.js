@@ -72,15 +72,31 @@ module.exports = (db) => {
   });    
 
 
-    // api/products/closebuy?q=xxxx
-    router.get("/closebuyall", (request, response) => {
-      db.getClosebuyProductsAll()
-        .then((listingArray) => {         
-  
-          response.json(listingArray.rows);
-          return;
-        });
-    });
+  // api/products/closebuy?q=xxxx
+  router.get("/closebuyall", (request, response) => {
+    db.getClosebuyProductsAll()
+      .then((listingArray) => {         
+
+        response.json(listingArray.rows);
+        return;
+      });
+  });
+
+  // api/products?q=xxxx
+  router.get("/", (request, response) => {
+    Promise.allSettled([getCraigslistsFullListings(request.query.q), getKijijiFullListings(request.query.q)])
+    .then((vals) => {
+      const craigsList = vals[0];
+      const kijiji = vals[1];
+
+      const newObject = [];
+      if (craigsList.status === 'fulfilled') newObject.push(...craigsList.value);
+      if (kijiji.status === 'fulfilled') newObject.push(...kijiji.value);
+
+      response.json(newObject);
+      return;
+    });  
+  });  
 
   return router;
 };

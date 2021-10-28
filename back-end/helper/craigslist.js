@@ -21,7 +21,7 @@ const client = new craigslist.Client({
 
 const options = {
   baseHost: _BASEHOST, // defaults to craigslist.org
-  // category: category,
+  category: category,
   // maxPrice: maxPrice,
   // minPrice: minPrice
 };
