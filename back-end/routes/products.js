@@ -2,7 +2,7 @@ const router = require("express").Router();
 const {getCraigslistsFullListings, getCraigslistsListings, getCraigslistsDeatil} = require("../helper/craigslist");
 const {getKijijiFullListings} = require("../helper/kijiji");
 
-module.exports = () => {
+module.exports = (db) => {
 
   /* If '/craigslist' has the performance issue, React side could call 'lisngs' first and call 'detail' (rendering twice) */
 
@@ -44,6 +44,58 @@ module.exports = () => {
           listingArray
         )
       });
+  });  
+
+  // api/products/closebuy?q=xxxx
+  router.get("/closebuy", (request, response) => {
+    db.getClosebuyProductsByTerm(request.query.q)
+      .then((listingArray) => {
+        const images = listingArray.rows;
+
+        //Images group by product_id
+        const newProduts = [...images.reduce((prv, cur) => {
+          const key = cur.product_id;          
+          const item = prv.get(key) || Object.assign({}, cur, {
+            images: []
+          });
+          if(cur.image_url) item.images.push(cur.image_url);
+
+          delete item.image_id;
+          delete item.image_url;
+
+          return prv.set(key, item);
+        }, new Map).values()];        
+
+        response.json(newProduts);
+        return;
+      });
+  });    
+
+
+  // api/products/closebuy?q=xxxx
+  router.get("/closebuyall", (request, response) => {
+    db.getClosebuyProductsAll()
+      .then((listingArray) => {         
+
+        response.json(listingArray.rows);
+        return;
+      });
+  });
+
+  // api/products?q=xxxx
+  router.get("/", (request, response) => {
+    Promise.allSettled([getCraigslistsFullListings(request.query.q), getKijijiFullListings(request.query.q)])
+    .then((vals) => {
+      const craigsList = vals[0];
+      const kijiji = vals[1];
+
+      const newObject = [];
+      if (craigsList.status === 'fulfilled') newObject.push(...craigsList.value);
+      if (kijiji.status === 'fulfilled') newObject.push(...kijiji.value);
+
+      response.json(newObject);
+      return;
+    });  
   });  
 
   return router;
