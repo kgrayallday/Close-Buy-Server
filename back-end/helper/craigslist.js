@@ -3,8 +3,10 @@ const craigslist = require('node-craigslist');
 
 const _PROTOCOL = 'https:';
 const _BASEHOST = 'craigslist.org';
-const maxRedirectCount = 5;
+const _maxRedirectCount = 5;
+const _maxResult = 20;
 const city = 'vancouver';
+
 
 const query = 'lights';
 const category = 'fua'; // defaults to sss (all)
@@ -15,7 +17,7 @@ const myIp = ''; //TODO : test - get geocode and pass to craigslist api
 
 const client = new craigslist.Client({
   city: city,
-  maxRedirectCount: maxRedirectCount,
+  maxRedirectCount: _maxRedirectCount,
   protocol: _PROTOCOL
 });
 
@@ -27,7 +29,7 @@ const options = {
 };
 
 
-exports.getCraigslistsFullListings = async (queryString) => {
+exports.getCraigslistsFullListings = async (queryString, maxResult=_maxResult) => {
 
   if (!queryString) {
     return [];
@@ -44,7 +46,7 @@ exports.getCraigslistsFullListings = async (queryString) => {
     return { ...listing, details: details[index] }
   })
 
-  return makeClosbuyObj(listingArray);
+  return makeClosbuyObj(listingArray).slice(0, maxResult);
 };
 
 exports.getCraigslistsListings = async (queryString) => {
