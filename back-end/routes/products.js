@@ -2,7 +2,7 @@ const router = require("express").Router();
 const {getCraigslistsFullListings, getCraigslistsListings, getCraigslistsDeatil} = require("../helper/craigslist");
 const {getKijijiFullListings} = require("../helper/kijiji");
 const {getEtsyListings} = require("../helper/etsy");
-const {getEbayListings} = require("../helper/ebay/ebay");
+const {getEbayListings} = require("../helper/ebay");
 
 module.exports = (db) => {
 
@@ -124,16 +124,18 @@ module.exports = (db) => {
 
   // api/products?q=xxxx
   router.get("/", (request, response) => {
-    Promise.allSettled([getCraigslistsFullListings(request.query.q), getKijijiFullListings(request.query.q), getEtsyListings(request.query.q)])
+    Promise.allSettled([getCraigslistsFullListings(request.query.q), getKijijiFullListings(request.query.q), getEtsyListings(request.query.q), getEbayListings(request.query.q)])
     .then((vals) => {
       const craigsList = vals[0];
       const kijiji = vals[1];
       const etsy = vals[2];
+      const ebay = vals[3];
 
       const newObject = [];
       if (craigsList.status === 'fulfilled') newObject.push(...craigsList.value);
       if (kijiji.status === 'fulfilled') newObject.push(...kijiji.value);
       if (etsy.status === 'fulfilled') newObject.push(...etsy.value);
+      if (ebay.status === 'fulfilled') newObject.push(...ebay.value);
 
       response.json(newObject);
       return;
