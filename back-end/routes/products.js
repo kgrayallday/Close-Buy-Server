@@ -60,7 +60,9 @@ module.exports = (db) => {
 
   // api/products/etsy?q=xxxx
   router.get("/ebay", (request, response) => {
-    getEbayListings(request.query.q)
+    let ebayText = false
+    if (request.query.ebayText && request.query.ebayText === 't') ebayText = true;
+    getEbayListings(request.query.q, ebayText)
       .then((listingArray) => {
         response.json(
           listingArray
@@ -124,7 +126,10 @@ module.exports = (db) => {
 
   // api/products?q=xxxx
   router.get("/", (request, response) => {
-    Promise.allSettled([getCraigslistsFullListings(request.query.q), getKijijiFullListings(request.query.q), getEtsyListings(request.query.q), getEbayListings(request.query.q)])
+    let ebayText = false;
+    if (request.query.ebayText && request.query.ebayText === 't') ebayText = true;
+
+    Promise.allSettled([getCraigslistsFullListings(request.query.q), getKijijiFullListings(request.query.q), getEtsyListings(request.query.q), getEbayListings(request.query.q, ebayText)])
     .then((vals) => {
       const craigsList = vals[0];
       const kijiji = vals[1];

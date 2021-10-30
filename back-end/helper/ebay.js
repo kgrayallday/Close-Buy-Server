@@ -1,5 +1,6 @@
 const axios = require('axios');
 const EbayAuthToken = require('ebay-oauth-nodejs-client');
+const { convert } = require('html-to-text');
 
 // pass the credentials through the ext file.
 // can't set the credential of object inside here. 'ebay-oauth-nodejs-client' provided by eBay has an error.
@@ -56,7 +57,8 @@ const makeEbayConfig = (token, term) => {
   };
  };
 
-exports.getEbayListings = async (queryString, maxResult=20) => {
+// exports.getEbayListings = async (queryString, maxResult=20) => {
+exports.getEbayListings = async (queryString, htmlToText=false) => {
   if (!queryString) {
     return [];
   }
@@ -85,17 +87,22 @@ exports.getEbayListings = async (queryString, maxResult=20) => {
     return { ...listing, details: details[index].data }
   })
 
-  return makeClosbuyObj(listingArray);
+  return makeClosbuyObj(listingArray, htmlToText);
+  // return makeClosbuyObj(listingArray);
 };
 
 
-const makeClosbuyObj = (cObj, hasImage=true) => {
+const makeClosbuyObj = (cObj, converHtml=false) => {
 
   const newObj = cObj.map(obj => {   
-    let images = [obj.details.image.imageUrl];
-    obj.details.additionalImages.forEach(image => {
-      if(image.imageUrl) images.push(image.imageUrl);    
-    });
+    console.log(obj);
+    let images = [];
+    if (obj.details.image && obj.details.image.imageUrl) images.push(obj.details.image.imageUrl);
+    if (obj.details.additionalImages) {
+      obj.details.additionalImages.forEach(image => {
+        if(image.imageUrl) images.push(image.imageUrl);    
+      });
+    }
 
     const flteredObj = {
       domain_id : obj.itemId,
@@ -104,7 +111,7 @@ const makeClosbuyObj = (cObj, hasImage=true) => {
       url : obj.itemWebUrl,
       location : `TBD----${obj.details.itemLocation.city} ${obj.details.itemLocation.stateOrProvince} ${obj.details.itemLocation.country}`,
       price : Number(obj.price.value) || 0,
-      description : obj.details.description,
+      description : (converHtml)? convert(obj.details.description, {wordwrap: 130}) : obj.details.description,
       title : obj.title,
       post_date : 'TBD---', 
       images
