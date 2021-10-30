@@ -30,24 +30,64 @@ const  DEFAULT_BODY= body;
 
 
 // pass the credentials through the ext file.
-let ebayAuthToken = new EbayAuthToken({
+// can't set the credential of object inside here. 'ebay-oauth-nodejs-client' provided by ebay has an error.
+const ebayAuthToken = new EbayAuthToken({
     filePath: './ebay-config-sample.json'
 });
 
-// // pass the credentials through constructor
-// ebayAuthToken = new EbayAuthToken({
-//     clientId: '---Client id ----',
-//     clientSecret: '-- client secret---',
-//     redirectUri: '-- redirect uri name --'
-// });
 
 const clientScope = 'https://api.ebay.com/oauth/api_scope';
 // // Client Crendential Auth Flow
 ebayAuthToken.getApplicationToken('SANDBOX', clientScope).then((data) => {
-    console.log(data);
+
+
+const axios = require('axios');
+
+let axiosConfig = 
+  {
+    // url: '/item_summary/search',
+    method: 'get',
+    baseURL: 'https://api.sandbox.ebay.com/buy/browse/v1/',  
+    // headers for ebay
+    headers: {
+      'content-type': 'application/json',
+      'Authorization': 'Bearer ' + data,
+      'cache-control': 'no-cache',
+      'X-EBAY-C-MARKETPLACE-ID': 'EBAY_US'
+    },  
+    params: {}  
+  };
+
+  const axiodParams = {
+    q: 'drone',
+    keywords: 'drone',
+    limit: 20,
+    fieldgroups : 'EXTENDED,MATCHING_ITEMS'
+  };
+
+  axiosConfig.params = axiodParams;
+
+  const axiosEbay = axios.create(axiosConfig);
+
+  // const url = 'https://api.ebay.com/buy/browse/v1/item_summary/search?q=drone&limit=3'
+  // const baseUrl = 'https://api.sandbox.ebay.com/buy/browse/v1/item_summary/search?'
+  axiosEbay.get('/item_summary/search')
+    .then(res => {
+      console.log(res);
+    });
+
 }).catch((error) => {
     console.log(`Error to get Access token :${JSON.stringify(error)}`);
 });
+
+
+
+
+
+
+
+
+
 
 
 
