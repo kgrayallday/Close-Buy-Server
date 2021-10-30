@@ -32,8 +32,8 @@ const makeEbayConfig = (token, term) => {
     },  
     params: {
       q: term,
-      keywords: term,
-      limit: 20,
+      // keywords: term,
+      limit: 1,
       // fieldgroups : 'EXTENDED'
     } 
   };
@@ -65,40 +65,59 @@ exports.getEbayListings = async (queryString, htmlToText=false) => {
 
   const accessToken = await ebayAuthToken.getApplicationToken('SANDBOX', clientScope);
 
-  const config = await makeEbayConfig(accessToken, queryString);
+  /* detail test code 
+  // const config1 = await makeEbayConfig(accessToken, queryString);
+  // const axiosEbay = await axios.create(config1);
+  // await axiosEbay.get('/buy/browse/v1/item_summary/search').then(data => console.log(data.data));
 
+  // const config = await makeEbayDetailConfig(accessToken);
+  // const detail = await axios.get(`/buy/browse/v1/item/v1%7C110539650475%7C0`, config).then(data => console.log(data.data));
+  */
+  
+  const config = await makeEbayConfig(accessToken, queryString);
   const axiosEbay = await axios.create(config);
 
-  const listings = await axiosEbay.get('/buy/browse/v1/item_summary/search');
-  // return listings.data.itemSummaries;
+  return await axiosEbay.get('/buy/browse/v1/item_summary/search')
+    .then(async (listings) => {      
+      const details =  (listings && listings.data && listings.data.total > 1 ) ? await Promise.all(
+        listings.data.itemSummaries.map(async (listing) => {
+        const config = await makeEbayDetailConfig(accessToken);
+        const detail = await axios.get('/buy/browse/v1/item/'+listing.itemId, config);
+        return detail;
+      })) : [];
+    
+      const listingArray = (listings && listings.data && listings.data.total > 1 )? listings.data.itemSummaries.map((listing, index) => {
+        return { ...listing, details: details[index].data }
+      }) : [];
+    
+      return makeClosbuyObj(listingArray, htmlToText);      
+    });
+/* original
+  const listings = await axiosEbay.get('/buy/browse/v1/item_summary/search')
+    .then(listings => console.log(listings.data.total));
 
-  // fieldgroups : PRODUCT
-  const details = await Promise.all(listings.data.itemSummaries.map(async (listing) => {
+  const details =  (listings && listings.data && listings.data.total > 1 ) ? await Promise.all(
+    listings.data.itemSummaries.map(async (listing) => {
     const config = await makeEbayDetailConfig(accessToken);
-    let detail = await axios.get(`/buy/browse/v1/item/${listing.itemId}`, config);
-    // console.log(detail);
+    const detail = await axios.get(`/buy/browse/v1/item/${listing.itemId}`, config);
     return detail;
-  }));
+  })) : [];
 
-  // const listingArray = details.map((detail) => {
-  //   return detail.data;
-  // })
-  const listingArray = listings.data.itemSummaries.map((listing, index) => {
+  const listingArray = (listings && listings.data && listings.data.total > 1 )? listings.data.itemSummaries.map((listing, index) => {
     return { ...listing, details: details[index].data }
-  })
+  }) : [];
 
   return makeClosbuyObj(listingArray, htmlToText);
-  // return makeClosbuyObj(listingArray);
+  */
 };
 
 
 const makeClosbuyObj = (cObj, converHtml=false) => {
 
   const newObj = cObj.map(obj => {   
-    console.log(obj);
     let images = [];
-    if (obj.details.image && obj.details.image.imageUrl) images.push(obj.details.image.imageUrl);
-    if (obj.details.additionalImages) {
+    if (obj.details && obj.details.image && obj.details.image.imageUrl) images.push(obj.details.image.imageUrl);
+    if (obj.details && obj.details.additionalImages) {
       obj.details.additionalImages.forEach(image => {
         if(image.imageUrl) images.push(image.imageUrl);    
       });
@@ -109,7 +128,7 @@ const makeClosbuyObj = (cObj, converHtml=false) => {
       domain : 'ebay',
       category : 'blue',
       url : obj.itemWebUrl,
-      location : `TBD----${obj.details.itemLocation.city} ${obj.details.itemLocation.stateOrProvince} ${obj.details.itemLocation.country}`,
+      location : `TBD----${obj.details.itemLocation.city || ''} ${obj.details.itemLocation.stateOrProvince || ''} ${obj.details.itemLocation.country || ''}`,
       price : Number(obj.price.value) || 0,
       description : (converHtml)? convert(obj.details.description, {wordwrap: 130}) : obj.details.description,
       title : obj.title,
