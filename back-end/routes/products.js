@@ -2,6 +2,7 @@ const router = require("express").Router();
 const {getCraigslistsFullListings, getCraigslistsListings, getCraigslistsDeatil} = require("../helper/craigslist");
 const {getKijijiFullListings} = require("../helper/kijiji");
 const {getEtsyListings} = require("../helper/etsy");
+const {getEbayListings} = require("../helper/ebay");
 
 module.exports = (db) => {
 
@@ -56,6 +57,16 @@ module.exports = (db) => {
         )
       });
   });  
+
+  // api/products/etsy?q=xxxx
+  router.get("/ebay", (request, response) => {
+    getEbayListings(request.query.q)
+      .then((listingArray) => {
+        response.json(
+          listingArray
+        )
+      });
+  });    
 
   
 

@@ -1,0 +1,16 @@
+{
+    "SANDBOX": {
+        "clientId": "RickDark-CloseBuy-SBX-aabbb16c7-41d53e19",
+        "clientSecret": "SBX-abbb16c7ad35-ba61-45f8-9880-bda5",
+        "devid": "53793a97-d752-4e18-b279-62a30a4792c2",
+        "redirectUri": "Rick_Darke-RickDark-CloseB-ymgugudd",
+        "baseUrl": "api.sandbox.ebay.com"
+    },
+    "PRODUCTION": {
+        "clientId": "RickDark-CloseBuy-SBX-aabbb16c7-41d53e19",
+        "clientSecret": "SBX-abbb16c7ad35-ba61-45f8-9880-bda5",
+        "devid": "53793a97-d752-4e18-b279-62a30a4792c2",
+        "redirectUri": "Rick_Darke-RickDark-CloseB-ymgugudd",
+        "baseUrl": "api.ebay.com"
+    }
+}
