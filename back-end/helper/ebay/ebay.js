@@ -35,6 +35,8 @@ exports.getEbayListings = async (queryString, maxResult=20) => {
 
   const con = await ebay.getAccessToken();
 
+  console.log(con);
+
   // const listings = await ebay.searchItems(params);  //param keyword
   // const listings = ebay.findItemsAdvanced(params); //param keywords
   // const listings = ebay.searchItems(params); //param keywords
