@@ -3,6 +3,7 @@ const {getCraigslistsFullListings, getCraigslistsListings, getCraigslistsDeatil}
 const {getKijijiFullListings} = require("../helper/kijiji");
 const {getEtsyListings} = require("../helper/etsy");
 const {getEbayListings} = require("../helper/ebay");
+const {getGoogleShoppingListings} = require("../helper/google");
 
 module.exports = (db) => {
 
@@ -70,6 +71,17 @@ module.exports = (db) => {
       });
   });    
 
+  // api/products/google?q=xxxx
+  router.get("/google", (request, response) => {
+    getGoogleShoppingListings(request.query.q)
+      .then((listingArray) => {
+        response.json(
+          listingArray
+        )
+        console.log(listingArray);
+      });
+  });   
+
   
 
   // api/products/closebuy?q=xxxx
@@ -129,14 +141,16 @@ module.exports = (db) => {
     let ebayText = false;
     if (request.query.ebayText && request.query.ebayText === 't') ebayText = true;
 
-    Promise.allSettled([getCraigslistsFullListings(request.query.q), getKijijiFullListings(request.query.q), getEtsyListings(request.query.q), getEbayListings(request.query.q, ebayText)])
+    Promise.allSettled([getGoogleShoppingListings(request.query.q), getCraigslistsFullListings(request.query.q), getKijijiFullListings(request.query.q), getEtsyListings(request.query.q), getEbayListings(request.query.q, ebayText)])
     .then((vals) => {
-      const craigsList = vals[0];
-      const kijiji = vals[1];
-      const etsy = vals[2];
-      const ebay = vals[3];
+      const google = vals[0];
+      const craigsList = vals[1];
+      const kijiji = vals[2];
+      const etsy = vals[3];
+      const ebay = vals[4];
 
       const newObject = [];
+      if (google.status === 'fulfilled') newObject.push(...google.value);
       if (craigsList.status === 'fulfilled') newObject.push(...craigsList.value);
       if (kijiji.status === 'fulfilled') newObject.push(...kijiji.value);
       if (etsy.status === 'fulfilled') newObject.push(...etsy.value);
