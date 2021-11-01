@@ -64,16 +64,6 @@ exports.getEbayListings = async (queryString, htmlToText=false) => {
   }
 
   const accessToken = await ebayAuthToken.getApplicationToken('SANDBOX', clientScope);
-
-  /* detail test code 
-  // const config1 = await makeEbayConfig(accessToken, queryString);
-  // const axiosEbay = await axios.create(config1);
-  // await axiosEbay.get('/buy/browse/v1/item_summary/search').then(data => console.log(data.data));
-
-  // const config = await makeEbayDetailConfig(accessToken);
-  // const detail = await axios.get(`/buy/browse/v1/item/v1%7C110539650475%7C0`, config).then(data => console.log(data.data));
-  */
-  
   const config = await makeEbayConfig(accessToken, queryString);
   const axiosEbay = await axios.create(config);
 
@@ -92,25 +82,8 @@ exports.getEbayListings = async (queryString, htmlToText=false) => {
     
       return makeClosbuyObj(listingArray, htmlToText);      
     });
-/* original
-  const listings = await axiosEbay.get('/buy/browse/v1/item_summary/search')
-    .then(listings => console.log(listings.data.total));
 
-  const details =  (listings && listings.data && listings.data.total > 1 ) ? await Promise.all(
-    listings.data.itemSummaries.map(async (listing) => {
-    const config = await makeEbayDetailConfig(accessToken);
-    const detail = await axios.get(`/buy/browse/v1/item/${listing.itemId}`, config);
-    return detail;
-  })) : [];
-
-  const listingArray = (listings && listings.data && listings.data.total > 1 )? listings.data.itemSummaries.map((listing, index) => {
-    return { ...listing, details: details[index].data }
-  }) : [];
-
-  return makeClosbuyObj(listingArray, htmlToText);
-  */
 };
-
 
 const makeClosbuyObj = (cObj, converHtml=false) => {
 
@@ -123,10 +96,10 @@ const makeClosbuyObj = (cObj, converHtml=false) => {
       });
     }
 
-    const flteredObj = {
+    const filteredObj = {
       domain_id : obj.itemId,
       domain : 'ebay',
-      category : 'blue',
+      category : 'yellow',
       url : obj.itemWebUrl,
       location : `TBD----${obj.details.itemLocation.city || ''} ${obj.details.itemLocation.stateOrProvince || ''} ${obj.details.itemLocation.country || ''}`,
       price : Number(obj.price.value) || 0,
@@ -135,7 +108,7 @@ const makeClosbuyObj = (cObj, converHtml=false) => {
       post_date : 'TBD---', 
       images
     }
-    return flteredObj;
+    return filteredObj;
   })
 
   return newObj;
