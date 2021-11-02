@@ -139,7 +139,22 @@ module.exports = (db) => {
   // api/products?q=xxxx
   router.get("/", (request, response) => {
     let ebayText = true;
+    let sortBy;
+    let orderBy;
+
     if (request.query.ebayText && request.query.ebayText === 'f') ebayText = false;
+    //sort_by ['date'||'price']
+    if (request.query.sort_by) {
+      const inputSort = request.query.sort_by.toLowerCase();
+      if ('date' === inputSort || 'price' ===  inputSort) sortBy = inputSort;
+      //default value of order_by
+      orderBy = 'asc';
+    } 
+    //order_by ['asc'||'desc']
+    if (request.query.order_by) {
+      const inputOrder = request.query.sort_by.toLowerCase();
+      if ('asc' === inputOrder || 'desc' ===  inputOrder) orderBy = inputOrder;
+    } 
 
     Promise.allSettled([getGoogleShoppingListings(request.query.q), getCraigslistsFullListings(request.query.q), getKijijiFullListings(request.query.q), getEtsyListings(request.query.q), getEbayListings(request.query.q, ebayText)])
     .then((vals) => {
@@ -155,6 +170,13 @@ module.exports = (db) => {
       if (kijiji.status === 'fulfilled') newObject.push(...kijiji.value);
       if (etsy.status === 'fulfilled') newObject.push(...etsy.value);
       if (ebay.status === 'fulfilled') newObject.push(...ebay.value);
+
+      if (sortBy && orderBy) {
+        if (sortBy === 'price') {
+          if(orderBy === 'asc') newObject.sort((a,b) => (a[sortBy] > b[sortBy]) ? 1 : ((b[sortBy] > a[sortBy]) ? -1 : 0));
+          if(orderBy === 'desc') newObject.sort((a,b) => (a[sortBy] > b[sortBy]) ? 1 : ((b[sortBy] > a[sortBy]) ? -1 : 0));
+        }
+      }
 
       response.json(newObject);
       return;
