@@ -138,8 +138,8 @@ module.exports = (db) => {
 
   // api/products?q=xxxx
   router.get("/", (request, response) => {
-    let ebayText = false;
-    if (request.query.ebayText && request.query.ebayText === 't') ebayText = true;
+    let ebayText = true;
+    if (request.query.ebayText && request.query.ebayText === 'f') ebayText = false;
 
     Promise.allSettled([getGoogleShoppingListings(request.query.q), getCraigslistsFullListings(request.query.q), getKijijiFullListings(request.query.q), getEtsyListings(request.query.q), getEbayListings(request.query.q, ebayText)])
     .then((vals) => {
