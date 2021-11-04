@@ -1,5 +1,6 @@
 const https = require('https');
 const qryString = require('querystring');
+const {convertNumber} = require("../helper/common");
 const APIKEY = process.env.SERP_APIKEY;
 
 // build url
@@ -110,7 +111,8 @@ const makeClosbuyObj = (cObj) => {
       domain_id: obj.product_id,
       location: 'TBD----Canada',
       url: obj.product_link || obj.link || '',
-      price: Number(obj.price.replace(/[^\d.-]/g, '')) || 0,
+      price : (obj.price[0] || obj.price[0] == 0) ? convertNumber(obj.price) : 'N/A',
+      // price: Number(obj.price.replace(/[^\d.-]/g, '')) || 0,
       description: (obj.details) ? ((obj.details.description) ? obj.details.description : '') : '',
       post_date: 'TBD----no data',
       images

@@ -1,6 +1,7 @@
 const axios = require('axios');
 const EbayAuthToken = require('ebay-oauth-nodejs-client');
 const { convert } = require('html-to-text');
+const {convertNumber} = require("../helper/common");
 
 // pass the credentials through the ext file.
 // can't set the credential of object inside here. 'ebay-oauth-nodejs-client' provided by eBay has an error.
@@ -33,7 +34,7 @@ const makeEbayConfig = (token, term) => {
     params: {
       q: term,
       // keywords: term,
-      limit: 1,
+      limit: 3,
       // fieldgroups : 'EXTENDED'
     } 
   };
@@ -102,7 +103,8 @@ const makeClosbuyObj = (cObj, converHtml=false) => {
       category : 'yellow',
       url : obj.itemWebUrl,
       location : `TBD----${obj.details.itemLocation.city || ''} ${obj.details.itemLocation.stateOrProvince || ''} ${obj.details.itemLocation.country || ''}`,
-      price : Number(obj.price.value) || 0,
+      // obj.price = (obj.price) ? convertNumber(obj.price) : 'N/A';
+      price : ((obj.price && obj.price.value) || obj.price.value == 0) ? convertNumber(obj.price.value) : 'N/A',
       description : (converHtml)? convert(obj.details.description, {wordwrap: 130}) : obj.details.description,
       title : obj.title,
       post_date : 'TBD---', 

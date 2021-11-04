@@ -1,5 +1,6 @@
 //Should be a class
 const craigslist = require('node-craigslist');
+const {convertNumber} = require("../helper/common");
 
 const _PROTOCOL = 'https:';
 const _BASEHOST = 'craigslist.org';
@@ -9,7 +10,7 @@ const city = 'vancouver';
 
 
 const query = 'lights';
-const category = 'fua'; // defaults to sss (all)
+const category = 'sss'; // defaults to sss (all)
 const maxPrice = '70';
 const minPrice = '50';
 
@@ -35,7 +36,8 @@ exports.getCraigslistsFullListings = async (queryString, maxResult=_maxResult) =
     return [];
   }
 
-  const listings = await client.search(options, queryString);
+  let listings = await client.search(options, queryString);
+  listings = listings.slice(0, maxResult);
 
   const details = await Promise.all(listings.map(async (listing) => {
     let detail = await client.details({ url: listing.url, pid: listing.pid })
@@ -46,7 +48,7 @@ exports.getCraigslistsFullListings = async (queryString, maxResult=_maxResult) =
     return { ...listing, details: details[index] }
   })
 
-  return makeClosbuyObj(listingArray).slice(0, maxResult);
+  return makeClosbuyObj(listingArray);
 };
 
 exports.getCraigslistsListings = async (queryString) => {
@@ -68,7 +70,8 @@ const makeClosbuyObj = (cObj) => {
     obj.domain_id = Number(obj.pid);
     obj.images = (obj.details.images) ? obj.details.images : [];
     obj.location = 'TBD----' + obj.location;
-    obj.price = (obj.price.trim().isEmpty) ? 0 : Number(obj.price.replace('$',''));
+    // obj.price = (obj.price.trim().isEmpty) ? 0 : Number(obj.price.replace('$',''));
+    obj.price = (obj.price || obj.price == 0) ? convertNumber(obj.price) : 'N/A';
     obj.description = obj.details.description;
     obj.post_date = obj.date;
 

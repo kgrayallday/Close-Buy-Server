@@ -1,4 +1,5 @@
 const kijiji = require("kijiji-scraper");
+const {convertNumber} = require("../helper/common");
 
 const options = {
     maxResults: 20,
@@ -77,7 +78,9 @@ const makeClosbuyObj = (cObj, hasImage=true) => {
     obj.category = 'green'
     obj.domain_id = obj.id;
     obj.location = 'TBD----' + ((obj.attributes.location) ? obj.attributes.location : '');
-    obj.price = obj.attributes.price;
+    // obj.price = obj.attributes.price;
+    // When item of kijiji is free, doesn't respose price field. those are all free.
+    obj.price = (obj.attributes && obj.attributes.price ) ? convertNumber(obj.attributes.price) : 0 ;
     obj.description = obj.details.description;
     obj.post_date = obj.date;
 

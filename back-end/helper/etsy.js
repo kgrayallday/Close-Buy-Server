@@ -1,3 +1,4 @@
+const {convertNumber} = require("../helper/common");
 const APIKEY = process.env.ETSY_APIKEY;
 const limit = 20;
 const region = 'CA';
@@ -32,7 +33,8 @@ const makeClosbuyObj = (cObj) => {
         category : 'blue',
         url : obj.url,
         location : 'TBD----'+location,
-        price : Number(obj.price) || 0,
+        price : (obj.price || obj.price == 0) ? convertNumber(obj.price) : 'N/A',
+        // price : Number(obj.price) || 0,
         description : obj.description,
         title : obj.title,
         post_date : 'TBD---' + (new Date(obj.creation_tsz).toString() || ''),
