@@ -5,7 +5,6 @@ module.exports = (db) => {
   // api/favourites/n
   router.get("/:id", (request, response) => {
     db.getFavourites(Number(request.params.id))
-
       .then((result) => {
         response.json(result.rows);
       })
@@ -50,11 +49,8 @@ module.exports = (db) => {
       });
     */
     db.getFullFavouritesByUserId(Number(request.query.userId))
-
       .then((result) => {
-
         const products = result.rows;
-
         //Images group by product_id
         const formattedProduct = [...products.reduce((prv, cur) => {
           const key = cur.product_id;          
@@ -62,13 +58,10 @@ module.exports = (db) => {
             images: []
           });
           if(cur.image_url) item.images.push(cur.image_url);
-
           delete item.image_id;
           delete item.image_url;    
-
           return prv.set(key, item);
         }, new Map).values()];
-
         response.json(formattedProduct);
       })
       .catch((err) => {
@@ -76,12 +69,8 @@ module.exports = (db) => {
         response.status(500).json(err.message)
         return;
       });
-
-
-    
-
   });  
-
+  
   /* TODO */
   // router.put("/favourites/", (request, response) => {}); //TODO: Check transaction 
   // router.delete("/appointments/:id", (request, response) => {});
