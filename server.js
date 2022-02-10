@@ -8,7 +8,6 @@ const App = Express();
 const BodyParser = require('body-parser');
 const db = require("./lib/queries");
 
-
 // Express Configuration
 App.use(BodyParser.urlencoded({ extended: false }));
 App.use(BodyParser.json());

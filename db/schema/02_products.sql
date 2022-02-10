@@ -1,4 +1,5 @@
 -- Drop and recreate Products table --
+
 DROP TABLE IF EXISTS products CASCADE;
 CREATE TABLE products (
   id SERIAL PRIMARY KEY NOT NULL,
