@@ -7,7 +7,6 @@ const Express = require('express');
 const App = Express();
 const BodyParser = require('body-parser');
 
-
 // Express Configuration
 App.use(BodyParser.urlencoded({ extended: false }));
 App.use(BodyParser.json());
@@ -28,5 +27,5 @@ App.get('/api/data', (req, res) => res.json({
 
 App.listen(PORT, () => {
   // eslint-disable-next-line no-console
-  console.log(`Express seems to be listening on port ${PORT} so that's pretty good 👍`);
+  console.log(`Express is listening on port ${PORT}`);
 });
