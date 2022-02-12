@@ -7,7 +7,8 @@ const {getGoogleShoppingListings} = require("../helper/google");
 
 module.exports = (db) => {
 
-  /* If '/craigslist' has the performance issue, React side could call 'lisngs' first and call 'detail' (rendering twice) */
+// If '/craigslist' has the performance issue, React side could call 'lisngs' 
+// first and call 'detail' (rendering twice)
   /*
     // api/products/craigslist/listings?q=xxxx
     router.get("/craigslist/listings", (request, response) => {
@@ -28,6 +29,8 @@ module.exports = (db) => {
         });
     });
   */
+
+  // --- Individual routes --- //
 
   // api/products/craigslist?q=xxxx
   router.get("/craigslist", (request, response) => {
@@ -59,7 +62,7 @@ module.exports = (db) => {
       });
   });  
 
-  // api/products/etsy?q=xxxx
+  // api/products/ebay?q=xxxx
   router.get("/ebay", (request, response) => {
     let ebayText = false
     if (request.query.ebayText && request.query.ebayText === 't') ebayText = true;
@@ -156,14 +159,20 @@ module.exports = (db) => {
       if ('asc' === inputOrder || 'desc' ===  inputOrder) orderBy = inputOrder;
     } 
 
-    Promise.allSettled([getGoogleShoppingListings(request.query.q), getCraigslistsFullListings(request.query.q), getKijijiFullListings(request.query.q), getEtsyListings(request.query.q), getEbayListings(request.query.q, ebayText)])
+    Promise.allSettled([
+      getGoogleShoppingListings(request.query.q),
+      getCraigslistsFullListings(request.query.q),
+      getKijijiFullListings(request.query.q),
+      getEtsyListings(request.query.q),
+      getEbayListings(request.query.q,
+      ebayText
+    )])
     .then((vals) => {
       const google = vals[0];
       const craigsList = vals[1];
       const kijiji = vals[2];
       const etsy = vals[3];
       const ebay = vals[4];
-
       const newObject = [];
       if (google.status === 'fulfilled') newObject.push(...google.value);
       if (craigsList.status === 'fulfilled') newObject.push(...craigsList.value);
