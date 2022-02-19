@@ -158,7 +158,8 @@ module.exports = (db) => {
       const inputOrder = request.query.sort_by.toLowerCase();
       if ('asc' === inputOrder || 'desc' ===  inputOrder) orderBy = inputOrder;
     } 
-
+    
+    // TODO: separate the promises so that its more like a lazy load
     Promise.allSettled([
       getGoogleShoppingListings(request.query.q),
       getCraigslistsFullListings(request.query.q),
